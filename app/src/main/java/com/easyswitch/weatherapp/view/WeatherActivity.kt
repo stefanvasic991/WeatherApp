@@ -30,14 +30,12 @@ class WeatherActivity : AppCompatActivity(), LocationListener {
     private val locationPermissionCode = 2
     private var latitude = 0.0
     private var longitude = 0.0
-    val format: DecimalFormat = DecimalFormat("#,##0.00")
 
     lateinit var viewModel: WeatherViewModel
-
+    lateinit var adapter: DayAdapter
     var hourList: ArrayList<String> = ArrayList()
     var temperatureList: ArrayList<Double> = ArrayList()
 
-    lateinit var adapter: DayAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,11 +61,11 @@ class WeatherActivity : AppCompatActivity(), LocationListener {
 
 
     }
+
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == locationPermissionCode) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show()
                 Log.d("Permission", "Permission Granted")
             }
             else {
@@ -82,27 +80,30 @@ class WeatherActivity : AppCompatActivity(), LocationListener {
     @SuppressLint("SetTextI18n")
     private fun initViewModel() {
         viewModel = ViewModelProvider(this)[WeatherViewModel::class.java]
-        viewModel.getWeather(latitude, longitude, true, "temperature_2m").observe(this, Observer { data ->
-            Log.d("DEBUG", data.currentWeather.toString())
+        viewModel.getWeather(latitude, longitude, true, "temperature_2m").observe(this, Observer { weather ->
 
-            data.currentWeather?.let {
-                binding?.tvTemperature?.text = String.format("%.0f", it.temperature).plus("°C")
-                binding?.tvWind?.text = "Wind speed: ".plus(String.format("%.0f", it.windspeed).plus("km/h"))
-            }
+            if (weather.equals(null)) {
+                Toast.makeText(this, "Error loading data!", Toast.LENGTH_LONG).show()
+            } else {
+                Log.d("DEBUG", weather.currentWeather.toString())
 
-            data.hourly?.let {
-                hourList.clear()
-                hourList.addAll(it.time)
+                weather.currentWeather?.let {
+                    binding?.tvTemperature?.text = String.format("%.0f", it.temperature).plus("°C")
+                    binding?.tvWind?.text = "Wind speed: ".plus(String.format("%.0f", it.windspeed).plus("km/h"))
+                }
 
-                temperatureList.clear()
-                temperatureList.addAll(it.temperature2m)
+                weather.hourly?.let {
+                    hourList.clear()
+                    hourList.addAll(it.time)
 
-                adapter = DayAdapter(this@WeatherActivity, hourList,  temperatureList)
-                binding?.rvDaily?.layoutManager = LinearLayoutManager(this@WeatherActivity, LinearLayoutManager.HORIZONTAL, false)
-                binding?.rvDaily?.adapter = adapter
+                    temperatureList.clear()
+                    temperatureList.addAll(it.temperature2m)
+
+                    adapter = DayAdapter(this@WeatherActivity, hourList,  temperatureList)
+                    binding?.rvDaily?.layoutManager = LinearLayoutManager(this@WeatherActivity, LinearLayoutManager.HORIZONTAL, false)
+                    binding?.rvDaily?.adapter = adapter
+                }
             }
         })
-
-//        viewModel.callWeather(latitude, longitude, true, "temperature_2m")
     }
 }
