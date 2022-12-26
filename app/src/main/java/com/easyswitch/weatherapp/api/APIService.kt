@@ -2,6 +2,7 @@ package com.easyswitch.weatherapp.api
 
 import com.easyswitch.weatherapp.model.Weather
 import retrofit2.Call
+import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -12,12 +13,12 @@ interface APIService {
     }
 
     @GET("forecast")
-    fun getWeather(
-        @Query("latitude") latitude: String?,
-        @Query("longitude") longitude: String?,
+    suspend fun getWeather(
+        @Query("latitude") latitude: Double?,
+        @Query("longitude") longitude: Double?,
         @Query("current_weather") current_weather: Boolean,
         @Query("hourly") hourly: String?
-    ): Call<Weather>
+    ): Weather
 
 
 }

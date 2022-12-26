@@ -38,7 +38,7 @@ class DayAdapter(private val context: Context, private val hourList: ArrayList<S
         val time = getDayStringFromDate(hourList.get(position))
 
         holder.tvTime.text = time
-        holder.tvTemperature.text =  tempList.get(position).toString()
+        holder.tvTemperature.text =  String.format("%.0f", tempList[position]).plus("°")
     }
 
     override fun getItemCount(): Int {
