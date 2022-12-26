@@ -82,9 +82,8 @@ class WeatherActivity : AppCompatActivity(), LocationListener {
     @SuppressLint("SetTextI18n")
     private fun initViewModel() {
         viewModel = ViewModelProvider(this)[WeatherViewModel::class.java]
-        viewModel.getWeather().observe(this, Observer { data ->
+        viewModel.getWeather(latitude, longitude, true, "temperature_2m").observe(this, Observer { data ->
             Log.d("DEBUG", data.currentWeather.toString())
-
 
             data.currentWeather?.let {
                 binding?.tvTemperature?.text = String.format("%.0f", it.temperature).plus("°C")
@@ -104,6 +103,6 @@ class WeatherActivity : AppCompatActivity(), LocationListener {
             }
         })
 
-        viewModel.callWeather(latitude, longitude, true, "temperature_2m")
+//        viewModel.callWeather(latitude, longitude, true, "temperature_2m")
     }
 }

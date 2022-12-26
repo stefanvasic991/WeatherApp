@@ -12,14 +12,11 @@ class WeatherViewModel : ViewModel() {
 
     private val weather: MutableLiveData<Weather> = MutableLiveData()
 
-    fun getWeather(): MutableLiveData<Weather> {
-        return weather
-    }
-
-    fun callWeather(latitude: Double, longitude: Double, current_weather: Boolean,hourly: String) {
+    fun getWeather(latitude: Double, longitude: Double, current_weather: Boolean,hourly: String): MutableLiveData<Weather> {
         CoroutineScope(Dispatchers.IO).launch {
             val response = APIManager.apiService.getWeather(latitude, longitude, current_weather, hourly)
             weather.postValue(response)
         }
+        return weather
     }
 }
